@@ -8,7 +8,7 @@ class UserController extends Controller
 {
 	public function show(Request $request)
 	{
-        return $request->user();
+	   return $request->user();
 	}
 
 	public function updateProfile(Request $request)

@@ -34,5 +34,8 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    'frontend' => [
+        'url' => env('FRONTEND_URL', 'http://localhost'),
+    ]
 
 ];

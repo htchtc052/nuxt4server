@@ -17,11 +17,15 @@ use Illuminate\Http\Request;
 Route::post('login', 'LoginController@login');
 Route::post('register', 'RegisterController@register');
 
+Route::post('activate_set', 'ActivateController@set');
+
 Route::group(['middleware' => 'jwt.auth'], function()
 {
     Route::get('user', 'UserController@show');
     Route::post('user/profile/update', 'UserController@updateProfile');
     Route::post('user/password/update', 'UserController@updatePassword');
+
+    Route::post('activate_send_email', 'ActivateController@send');
 });
 
 

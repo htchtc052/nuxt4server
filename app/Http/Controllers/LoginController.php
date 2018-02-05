@@ -3,14 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\LoginFormRequest;
+use Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class LoginController extends Controller
 {
-	public function login(LoginFormRequest $request)
+	public function login(Request $request)
 	{
+
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required'
+		];
+
+		$validator= Validator::make($request->all(),$rules);
+
+    	if($validator->fails()){
+    		return response()->json(['errors' => $validator->messages()], 422);
+    	}
 
 		$credentials = $request->only('email', 'password');
 
