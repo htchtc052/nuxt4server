@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\ActivateEmail;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ActivateController extends Controller
 {
@@ -35,9 +37,12 @@ class ActivateController extends Controller
     		], 422);
         }
        
+        $token =  JWTAuth::fromUser($user);
+
         return response()->json([
             'success'=>true,
             'user' => $user,
+            'token' => $token,
             'message'=>'you have successfully verified your account'
         ], 200);
     }

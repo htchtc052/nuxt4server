@@ -16,8 +16,8 @@ class mailTest extends TestCase
      */
     public function testExample()
     {
-        $user = \App\User::find(21);
-        \Mail::to($user->email)->send(new TestMail());
+        $users = \App\User::all();
+        \Mail::to($users->first())->send(new TestMail(['user' => $users->first()]));
         //\Mail::assertSent(TestMail::class);
         $this->assertTrue(true);
     }

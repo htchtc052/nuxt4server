@@ -18,7 +18,19 @@ class ActivateEmail
 
         $token = $this->getToken();
 
-        $this->createActivation($user, $token);
+        $activation =  Activation::where('user_id', $user->id)
+                ->first();
+
+        if (!$activation) {
+            Activation::create([
+                'user_id' => $user->id,
+                'token' => $token,
+            ]);
+        } else {
+            $activation->forceFill([
+                'token' => $token,
+            ])->save();
+        }
 
         Mail::to($user->email)->send(new ActivateMail(array(
             'user' => $user,
@@ -30,7 +42,10 @@ class ActivateEmail
 
     public function activate($token)
     {
-        if (!$activation = Activation::where('token', $token)->first()) {
+        if (!$activation = Activation::where('token', $token)
+                ->where('updated_at', '>', Carbon::now()->addMinutes(-2))
+                    ->first()
+            ) {
             throw new \Exception("Verification link invalid");
         }
 
@@ -51,24 +66,6 @@ class ActivateEmail
         Activation::where('token', $token)->delete();
 
         return $user;
-
-    }
-
-
-    private function createActivation($user, $token)
-    {
-        $activation = Activation::where('user_id', $user->id)->first();
-
-        if (!$activation) {
-            Activation::insert([
-                'user_id' => $user->id,
-                'token' => $token,
-            ]);
-        } else {
-            $activation->forceFill([
-                'token' => $token,
-            ])->save();
-        }
 
     }
 
