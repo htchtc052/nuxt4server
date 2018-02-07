@@ -19,7 +19,7 @@ Route::post('register', 'RegisterController@register');
 
 Route::post('activate_set', 'ActivateController@set');
 
-Route::group(['middleware' => 'jwt.auth'], function()
+Route::group(['middleware' => 'jwt_token_custom'], function()
 {
     Route::get('user', 'UserController@show');
     Route::post('user/profile/update', 'UserController@updateProfile');

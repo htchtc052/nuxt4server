@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class UserController extends Controller
 {
 	public function show(Request $request)
 	{
-	   return $request->user();
+		$user = $request->user();
+
+		return response()->json(['userController' => true, 'user' => $user]);
 	}
 
 	public function updateProfile(Request $request)

@@ -12,7 +12,7 @@ class ActivateController extends Controller
     //
     public function send(Request $request, ActivateEmail $activateEmail)
     {
-        $user = $request -> user();
+        $user = $request->user();
         
         try {
             $activateEmail->sendMail($user);
