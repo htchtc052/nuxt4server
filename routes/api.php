@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 Route::post('login', 'LoginController@login');
 Route::post('register', 'RegisterController@register');
 
-Route::post('activate_set', 'ActivateController@set');
 
 Route::group(['middleware' => 'jwt_token_custom'], function()
 {
@@ -29,5 +28,10 @@ Route::group(['middleware' => 'jwt_token_custom'], function()
 });
 
 
+Route::post('activate_set', 'ActivateController@set');
+
+Route::post('password_send_email', 'ForgotPasswordController@send');
+
+Route::post('password_set', 'ForgotPasswordController@set');
 
 

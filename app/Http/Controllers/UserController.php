@@ -12,7 +12,10 @@ class UserController extends Controller
 	{
 		$user = $request->user();
 
-		return response()->json(['userController' => true, 'user' => $user]);
+		//print_r($request->get('token'));
+
+		return $request->user();
+		//return response()->json(compact('user'));
 	}
 
 	public function updateProfile(Request $request)

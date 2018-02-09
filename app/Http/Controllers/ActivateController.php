@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ActivateEmail;
+use App\Services\ActivateEmailService;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
 class ActivateController extends Controller
 {
     //
-    public function send(Request $request, ActivateEmail $activateEmail)
+    public function send(Request $request, ActivateEmailService $activateEmail)
     {
         $user = $request->user();
         
@@ -26,7 +26,7 @@ class ActivateController extends Controller
         return response()->json(['success' => true, 'message' => 'Email send to '.$user->email], 200);
     }
 
-    public function set(Request $request, ActivateEmail $activateEmail)
+    public function set(Request $request, ActivateEmailService $activateEmail)
     {
         try {
             $user = $activateEmail->activate($request->get('token'));

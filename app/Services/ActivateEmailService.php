@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Mail\ActivateMail;
 use Mail;
 
-class ActivateEmail
+class ActivateEmailService
 {
     public function sendMail($user)
     {
@@ -43,10 +43,10 @@ class ActivateEmail
     public function activate($token)
     {
         if (!$activation = Activation::where('token', $token)
-                ->where('updated_at', '>', Carbon::now()->addMinutes(-2))
+                ->where('updated_at', '>', Carbon::now()->addMinutes(-60))
                     ->first()
             ) {
-            throw new \Exception("Verification link invalid");
+            throw new \Exception("Verification link expired or invalid");
         }
 
         $user = User::find($activation->user_id);
