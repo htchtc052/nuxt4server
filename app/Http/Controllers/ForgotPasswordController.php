@@ -23,12 +23,12 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'This e-mail is not registered. ',
         ];
         
-        $validator= Validator::make($request->all(),$rules, $messages);
+        $validator= Validator::make($request->all(),$rules);
 
-        if ($validator->fails()){
+    	if($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
     	}
-
+      
         try {
             $user = $changePassword->sendMail($request->get('email'));
         } catch (\Throwable $e){
@@ -39,26 +39,23 @@ class ForgotPasswordController extends Controller
         }
       
         return response()->json(['success' => true, 'message' => 'Email send to '.$user->email], 200);
-
-
     }
     
     public function set(Request $request, ChangePasswordService $changePassword)
     {
-       $rules =  [
-            'password' => 'required|confirmed|min:4',
+        $rules =  [
+			'password' => 'required|min:4',
+			'confirm_password' => 'required|same:password'
         ];
     
         $messages =  [
             'password.required' => 'Please enter a new password',
             'password.min' => 'New passwords must be 4 characters or more',
-            'password.confirmed' => 'The password confirmation does not match.',
         ];
 
+        $validator= Validator::make($request->all(),$rules);
 
-        $validator= Validator::make($request->all(),$rules, $messages);
-
-        if ($validator->fails()){
+    	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
     	}
        

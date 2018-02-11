@@ -15,24 +15,27 @@ class RegisterController extends Controller
     
     public function register(Request $request, ActivateEmailService $activateEmail)
     {
-        $rules = [
+
+    	$rules =  [
             'email' => 'required|email|unique:users',
             'name' => 'required',
-            'password' => 'required|confirmed|min:4',
+			'password' => 'required|min:4',
+			'confirm_password' => 'required|same:password',
             'agree' => 'required',
         ];
-        
+    
         $messages =  [
             'email.required' => 'Please enter an email address',
             'email.email' => 'Please enter a valid email address',
             'email.unique' => 'This e-mail is already taken. ',
             'name.required' => 'Please enter your name',
-            'password.required' => 'Please enter a password',
-            'password.min' => 'Passwords must be 4 characters or more',
+            'password.required' => 'Please enter a new password',
+            'password.min' => 'New passwords must be 4 characters or more',
             'agree.required' => 'Please agree to the terms of service'
         ];
 
-    	$validator= Validator::make($request->all(),$rules, $messages);
+
+        $validator= Validator::make($request->all(),$rules);
 
     	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);

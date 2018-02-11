@@ -14,12 +14,12 @@ class ChangePasswordService
     public function sendMail($email)
     {
         $user = User::where('email', $email)->first();
-
+        
+        $token = $this->getToken();
+        
         $changePassword =  ChangePassword::where('user_id', $user->id)
                 ->first();
-
-        $token = $this->getToken();
-
+                
         if (!$changePassword) {
             ChangePassword::create([
                 'user_id' => $user->id,
@@ -59,10 +59,7 @@ class ChangePasswordService
             throw new \Exception("User for change password not found");
         }
 
-        $user->forceFill([
-            'password' => bcrypt($password),
-            'remember_token' => Str::random(60),
-        ])->save();
+        $user->updatePassword($password);
 
         ChangePassword::where([['user_id', '=', $user->id], ['token', '=', $token]])->delete();
         

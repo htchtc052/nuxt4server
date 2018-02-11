@@ -43,4 +43,25 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function updatePassword($password)
+    {
+        $this->forceFill([
+            'password' => bcrypt($password),
+        ])->save();
+    }
+
+    public function updateName($name)
+    {
+        $this->forceFill([
+            'name' => $name,
+        ])->save();
+    }
+
+    public function updateEmail($email)
+    {
+        $this->forceFill([
+            'email' => $email,
+        ])->save();
+    }
 }
