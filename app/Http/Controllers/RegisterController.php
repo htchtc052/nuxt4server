@@ -16,6 +16,8 @@ class RegisterController extends Controller
     public function register(Request $request, ActivateEmailService $activateEmail)
     {
 
+        //return response()->json(['Error single test'], 500);
+
     	$rules =  [
             'email' => 'required|email|unique:users',
             'name' => 'required',
@@ -48,10 +50,24 @@ class RegisterController extends Controller
             'is_verified' => 0,
         ]);
 
-        $activateEmail->sendMail($user);
+        try {
+            $activateEmail->sendMail($user);
+        } catch (\Throwable $e){
+            return response()->json(['Send registration link failed'], 500);
+        }
 
-        $token = JWTAuth::fromUser($user);
-      
-        return response()->json(compact('token', 'user'));
+        
+        try {
+            $token = JWTAuth::fromUser($user);
+         } catch (\Throwable $e){
+            return response()->json(['Auth problem'], 500);
+        }
+        
+        $message = "Activation link sended to your email ".$user->email;
+
+        return response()->json(compact('user', 'message'), 200)->withHeaders([
+                'Access-Control-Expose-Headers' => 'auth_token',
+                'auth_token' => $token,
+            ]);;
     }
 }

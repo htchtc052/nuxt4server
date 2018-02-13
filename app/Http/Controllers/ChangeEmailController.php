@@ -29,22 +29,15 @@ class ChangeEmailController extends Controller
     		return response()->json(['errors' => $validator->messages()], 422);
     	}
       
-
-        $user = $request->user();
-        
-
+        $user = \Auth::user();
+       
 		try {
 			$changeEmailService->sendChangeEmailMail($user, $request->get('email'));
 		} catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['Change link not sended'], 500);
         }
 
-        $message =  'Change link sending to '.$request->get('email');
-        
-        return response()->json(compact('user', 'message'));
+        return response()->json(['Change link sended '.$user->email], 200);
 	}
 
     
@@ -54,20 +47,21 @@ class ChangeEmailController extends Controller
         try {
             $user = $changeEmailService->setEmail($request->get('token'));
         } catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['Link expired or invalid'], 500);
         }
       
-        $token =  JWTAuth::fromUser($user);
+        try {
+            $token = JWTAuth::fromUser($user);
+         } catch (\Throwable $e){
+            return response()->json(['Auth problem'], 500);
+        }
 
-        return response()->json([
-            'success' => true,
-            'user' => $user,
-            'token' => $token,
-            'message' => 'New email '.$user->email.' set successfully!',
-        ], 200);
+        $message = 'New email '.$user->email.' set successfully!';
+
+        return response()->json(compact('user', 'message'), 200)->withHeaders([
+            'Access-Control-Expose-Headers' => 'auth_token',
+            'auth_token' => $token,
+        ]);
 
     }
    

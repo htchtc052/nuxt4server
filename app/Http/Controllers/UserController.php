@@ -13,8 +13,7 @@ class UserController extends Controller
 {
 	public function show(Request $request)
 	{
-		$user = $request->user();
-		return $request->user();
+		return \Auth::user();
 	}
 
 	public function updateProfile(Request $request)
@@ -36,7 +35,9 @@ class UserController extends Controller
 		$user = $request->user();
 		$user->updateName($request->get('name'));
 
-		return response()->json(compact('user'));
+		$message = 'Profile update successfully';
+
+		return response()->json(compact('user', 'message'));
 	}
 
 	public function updatePassword(Request $request)
@@ -61,7 +62,9 @@ class UserController extends Controller
 
         $user->updatePassword($request->get('password'));
 
-		return response()->json(compact('user'));
+		$message = 'Password update successfully';
+		
+		return response()->json(compact('user', 'message'));
 	}
 
 

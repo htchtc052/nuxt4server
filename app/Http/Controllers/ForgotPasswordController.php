@@ -23,7 +23,7 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'This e-mail is not registered. ',
         ];
         
-        $validator= Validator::make($request->all(),$rules);
+        $validator= Validator::make($request->all(),$rules, $messages);
 
     	if($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
@@ -32,17 +32,15 @@ class ForgotPasswordController extends Controller
         try {
             $user = $changePassword->sendMail($request->get('email'));
         } catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['Email not sended'], 500);
         }
       
-        return response()->json(['success' => true, 'message' => 'Email send to '.$user->email], 200);
+        return response()->json(['Email send to '.$user->email], 200);
     }
     
     public function set(Request $request, ChangePasswordService $changePassword)
     {
+        
         $rules =  [
 			'password' => 'required|min:4',
 			'confirm_password' => 'required|same:password'
@@ -62,20 +60,22 @@ class ForgotPasswordController extends Controller
         try {
             $user = $changePassword->change($request->get('email'), $request->get('token'), $request->get('password'));
         } catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['New password save problem'], 500);
         }
       
-        $token =  JWTAuth::fromUser($user);
+        
+        try {
+            $token = JWTAuth::fromUser($user);
+         } catch (\Throwable $e){
+            return response()->json(['Auth problem'], 500);
+        }
 
-        return response()->json([
-            'success' => true,
-            'user' => $user,
-            'token' => $token,
-            'message' => 'Password set successfully!',
-        ], 200);
+        $message = 'Password set successfully!';
+
+        return response()->json(compact('user', 'message'), 200)->withHeaders([
+            'Access-Control-Expose-Headers' => 'auth_token',
+            'auth_token' => $token,
+        ]);
 
     }
    

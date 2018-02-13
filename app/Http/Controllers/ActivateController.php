@@ -17,13 +17,10 @@ class ActivateController extends Controller
         try {
             $activateEmail->sendMail($user);
         } catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['Email not sended'], 500);
         }
         
-        return response()->json(['success' => true, 'message' => 'Email send to '.$user->email], 200);
+        return response()->json(['Email send to '.$user->email], 200);
     }
 
     public function set(Request $request, ActivateEmailService $activateEmail)
@@ -31,19 +28,20 @@ class ActivateController extends Controller
         try {
             $user = $activateEmail->activate($request->get('token'));
         } catch (\Throwable $e){
-            return response()->json([
-    		    'success' => false,
-    		    'error' => 'Error! '.$e->getMessage(),
-    		], 422);
+            return response()->json(['Link expired or invalid'], 500);
         }
        
-        $token =  JWTAuth::fromUser($user);
+        try {
+            $token = JWTAuth::fromUser($user);
+         } catch (\Throwable $e){
+            return response()->json(['Auth problem'], 500);
+        }
 
-        return response()->json([
-            'success'=>true,
-            'user' => $user,
-            'token' => $token,
-            'message'=>'you have successfully verified your account'
-        ], 200);
+        $message = 'You have successfully verified your account';
+
+        return response()->json(compact('user', 'message'), 200)->withHeaders([
+            'Access-Control-Expose-Headers' => 'auth_token',
+            'auth_token' => $token,
+        ]);
     }
 }
