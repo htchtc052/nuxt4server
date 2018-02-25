@@ -24,7 +24,7 @@ class GetUserFromToken extends BaseMiddleware
      */
     public function handle($request, Closure $next)
     {
-      // return response()->json(['token_not_provided'], 401);
+      //return response()->json(['token_not_provided'], 401);
         
         try {
             $this->checkForToken($request); 

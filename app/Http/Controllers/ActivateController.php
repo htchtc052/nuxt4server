@@ -23,25 +23,23 @@ class ActivateController extends Controller
         return response()->json(['Email send to '.$user->email], 200);
     }
 
-    public function set(Request $request, ActivateEmailService $activateEmail)
+    public function set(Request $request, $token, ActivateEmailService $activateEmail)
     {
         try {
-            $user = $activateEmail->activate($request->get('token'));
+            $user = $activateEmail->activate($token);
         } catch (\Throwable $e){
-            return response()->json(['Link expired or invalid'], 500);
+            return redirect()
+            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
         }
        
         try {
             $token = JWTAuth::fromUser($user);
          } catch (\Throwable $e){
-            return response()->json(['Auth problem'], 500);
+            return redirect()
+            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
         }
 
-        $message = 'You have successfully verified your account';
-
-        return response()->json(compact('user', 'message'), 200)->withHeaders([
-            'Access-Control-Expose-Headers' => 'auth_token',
-            'auth_token' => $token,
-        ]);
+        return redirect()
+            ->to(\Config::get('services.frontend.url').'/auto_login?token='.$token.'&msg=activate');
     }
 }

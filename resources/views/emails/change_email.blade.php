@@ -4,9 +4,9 @@
 Hi {{ $user -> name }},
 
 Please click on the link below or copy it into the address bar of your browser to confirm changing email to {{ $email }} for your account:
-<br>
+<br>!!
 
-@component('mail::button', ['url' => \Config::get('services.frontend.url')."/email_set/".$token])
+@component('mail::button', ['url' => route('email_set', $token)])
 Button Text
 @endcomponent
 

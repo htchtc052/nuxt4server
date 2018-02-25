@@ -17,6 +17,7 @@ class RegisterController extends Controller
     {
 
         //return response()->json(['Error single test'], 500);
+        $request['agree'] =  $request['agree'] ? 1 : '';
 
     	$rules =  [
             'email' => 'required|email|unique:users',
@@ -39,6 +40,7 @@ class RegisterController extends Controller
 
         $validator= Validator::make($request->all(),$rules);
 
+        
     	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
     	}
@@ -68,6 +70,6 @@ class RegisterController extends Controller
         return response()->json(compact('user', 'message'), 200)->withHeaders([
                 'Access-Control-Expose-Headers' => 'auth_token',
                 'auth_token' => $token,
-            ]);;
+        ]);;
     }
 }

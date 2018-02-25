@@ -7,13 +7,16 @@ use Illuminate\Http\Response;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Validator;
+use Auth;
 use App\Services\ChangeEmailService;
 
 class UserController extends Controller
 {
 	public function show(Request $request)
 	{
-		return \Auth::user();
+		$user = Auth::user();
+
+		return response()->json(compact('user'));
 	}
 
 	public function updateProfile(Request $request)

@@ -41,27 +41,25 @@ class ChangeEmailController extends Controller
 	}
 
     
-    public function setEmail(Request $request, ChangeEmailService $changeEmailService)
+    public function set(Request $request, $token, ChangeEmailService $changeEmailService)
     {
        
         try {
-            $user = $changeEmailService->setEmail($request->get('token'));
+            $user = $changeEmailService->setEmail($token);
         } catch (\Throwable $e){
-            return response()->json(['Link expired or invalid'], 500);
+            return redirect()
+            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
         }
       
         try {
             $token = JWTAuth::fromUser($user);
          } catch (\Throwable $e){
-            return response()->json(['Auth problem'], 500);
+            return redirect()
+            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
         }
 
-        $message = 'New email '.$user->email.' set successfully!';
-
-        return response()->json(compact('user', 'message'), 200)->withHeaders([
-            'Access-Control-Expose-Headers' => 'auth_token',
-            'auth_token' => $token,
-        ]);
+        return redirect()
+        ->to(\Config::get('services.frontend.url').'/auto_login?token='.$token.'&msg=email_set&email='.$user->email);
 
     }
    

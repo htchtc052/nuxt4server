@@ -36,4 +36,10 @@ Route::post('password_set', 'ForgotPasswordController@set');
 
 Route::post('email_set', 'ChangeEmailController@setEmail');
 
+Route::post('oauth/{driver}', 'OAuthController@redirectToProvider');
+Route::get('oauth/{driver}/callback', 'OAuthController@handleProviderCallback')->name('oauth.callback');
+
+Route::get('activate_set/{token}', 'ActivateController@set')->name('activate_set');
+
+Route::get('email_set/{token}', 'ChangeEmailController@set')->name('email_set');
 
