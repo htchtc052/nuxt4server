@@ -70,12 +70,7 @@ class ForgotPasswordController extends Controller
             return response()->json(['Auth problem'], 500);
         }
 
-        $message = 'Password set successfully!';
-
-        return response()->json(compact('user', 'message'), 200)->withHeaders([
-            'Access-Control-Expose-Headers' => 'auth_token',
-            'auth_token' => $token,
-        ]);
+        return response()->json(compact('token'), 200);
 
     }
    

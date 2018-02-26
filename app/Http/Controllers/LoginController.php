@@ -38,9 +38,11 @@ class LoginController extends Controller
 
 		$message = "Welcome back ".$user->name;
 
-        return response()->json(compact('user', 'message'), 200)->withHeaders([
-                'Access-Control-Expose-Headers' => 'auth_token',
-                'auth_token' => $token,
-        ]);;
+		return response()->json(compact('token', 'message'), 200);
 	}
+
+	public function logout(Request $request)
+    {
+        \Auth::logout();
+    }
 }

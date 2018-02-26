@@ -67,9 +67,6 @@ class RegisterController extends Controller
         
         $message = "Activation link sended to your email ".$user->email;
 
-        return response()->json(compact('user', 'message'), 200)->withHeaders([
-                'Access-Control-Expose-Headers' => 'auth_token',
-                'auth_token' => $token,
-        ]);;
+        return response()->json(compact('token', 'message'), 200);
     }
 }
