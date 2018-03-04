@@ -15,7 +15,6 @@ class UserController extends Controller
 	public function show(Request $request)
 	{
 		$user = Auth::user();
-
 		return response()->json(compact('user'));
 	}
 
@@ -25,11 +24,7 @@ class UserController extends Controller
 			'name'  => 'required',
 		];
 
-		$messages =  [
-            'name.required' => 'Please enter your name',
-        ];
-
-		$validator= Validator::make($request->all(),$rules, $messages);
+		$validator= Validator::make($request->all(), $rules);
 
     	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
@@ -50,12 +45,7 @@ class UserController extends Controller
 			'confirm_password' => 'required|same:password'
         ];
     
-        $messages =  [
-            'password.required' => 'Please enter a new password',
-            'password.min' => 'New passwords must be 4 characters or more',
-        ];
-
-		$validator= Validator::make($request->all(),$rules, $messages);
+		$validator= Validator::make($request->all(), $rules);
 
     	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
@@ -69,8 +59,5 @@ class UserController extends Controller
 		
 		return response()->json(compact('user', 'message'));
 	}
-
-
-
 
 }

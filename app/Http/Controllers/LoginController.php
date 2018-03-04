@@ -31,14 +31,10 @@ class LoginController extends Controller
 				return response()->json(['errors' => ['email' => ['Invalid login credential']]], 422);
 			}
 		} catch(JWTException $e) {
-			return response()->json(['Server login error'], 500);
+			return response()->json(['Server_error_token'], 500);
 		}
 
-		$user = \Auth::user();
-
-		$message = "Welcome back ".$user->name;
-
-		return response()->json(compact('token', 'message'), 200);
+		return response()->json(compact('token'), 200);
 	}
 
 	public function logout(Request $request)

@@ -17,11 +17,6 @@ class ChangeEmailController extends Controller
             'email' => ['required', 'email', 'unique:users'],
         ];
     
-        $messages =  [
-            'email.required' => 'Please enter an email',
-            'email.email' => 'Please enter a valid email address',
-            'email.unique' => 'This e-mail is already taken.',
-        ];
         
         $validator= Validator::make($request->all(),$rules);
 
@@ -34,10 +29,10 @@ class ChangeEmailController extends Controller
 		try {
 			$changeEmailService->sendChangeEmailMail($user, $request->get('email'));
 		} catch (\Throwable $e){
-            return response()->json(['Change link not sended'], 500);
+            return response()->json(['Server_error_send_email'], 500);
         }
 
-        return response()->json(['Change link sended '.$user->email], 200);
+        return response()->json(['success'], 200);
 	}
 
     

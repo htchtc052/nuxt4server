@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 */
 
 
-Route::post('logout', 'LoginController@logout');
 
 Route::group(['middleware' => 'guest:api'], function () {
 
@@ -42,8 +41,10 @@ Route::group(['middleware' => 'jwt_token_custom'], function()
     Route::post('user/password', 'UserController@updatePassword');
     Route::post('user/email', 'ChangeEmailController@sendMail');
     Route::post('activate_send_email', 'ActivateController@send');
-   
+
 });
+
+Route::post('logout', 'LoginController@logout');
 
 
 

@@ -27,17 +27,7 @@ class RegisterController extends Controller
             'agree' => 'required',
         ];
     
-        $messages =  [
-            'email.required' => 'Please enter an email address',
-            'email.email' => 'Please enter a valid email address',
-            'email.unique' => 'This e-mail is already taken. ',
-            'name.required' => 'Please enter your name',
-            'password.required' => 'Please enter a new password',
-            'password.min' => 'New passwords must be 4 characters or more',
-            'agree.required' => 'Please agree to the terms of service'
-        ];
-
-
+       
         $validator= Validator::make($request->all(),$rules);
 
         
@@ -55,18 +45,16 @@ class RegisterController extends Controller
         try {
             $activateEmail->sendMail($user);
         } catch (\Throwable $e){
-            return response()->json(['Send registration link failed'], 500);
+            return response()->json(['Server_error_send_mail'], 500);
         }
 
         
         try {
             $token = JWTAuth::fromUser($user);
          } catch (\Throwable $e){
-            return response()->json(['Auth problem'], 500);
+            return response()->json(['Server_error_create_token'], 500);
         }
         
-        $message = "Activation link sended to your email ".$user->email;
-
-        return response()->json(compact('token', 'message'), 200);
+        return response()->json(compact('token'), 200);
     }
 }

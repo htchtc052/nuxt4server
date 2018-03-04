@@ -17,10 +17,10 @@ class ActivateController extends Controller
         try {
             $activateEmail->sendMail($user);
         } catch (\Throwable $e){
-            return response()->json(['Email not sended'], 500);
+            return response()->json(['Server_error_send_email'], 500);
         }
         
-        return response()->json(['Email send to '.$user->email], 200);
+        return response()->json(['success'], 200);
     }
 
     public function set(Request $request, $token, ActivateEmailService $activateEmail)

@@ -38,7 +38,7 @@ return [
     // 'digits_between'       => 'The :attribute must be between :min and :max digits.',
     // 'dimensions'           => 'The :attribute has invalid image dimensions.',
     // 'distinct'             => 'The :attribute field has a duplicate value.',
-    // 'email'                => 'The :attribute must be a valid email address.',
+    // 'email'                => ':Attribute имеет неверный формат.',
     // 'exists'               => 'The selected :attribute is invalid.',
     // 'file'                 => 'The :attribute must be a file.',
     // 'filled'               => 'The :attribute field must have a value.',
@@ -61,21 +61,21 @@ return [
     // 'min'                  => [
     //     'numeric' => 'The :attribute must be at least :min.',
     //     'file'    => 'The :attribute must be at least :min kilobytes.',
-    //     'string'  => 'The :attribute must be at least :min characters.',
+    //     'string'  => ':Attribute должен быть длиннее :min.',
     //     'array'   => 'The :attribute must have at least :min items.',
     // ],
     // 'not_in'               => 'The selected :attribute is invalid.',
     // 'numeric'              => 'The :attribute must be a number.',
     // 'present'              => 'The :attribute field must be present.',
     // 'regex'                => 'The :attribute format is invalid.',
-    // 'required'             => 'The :attribute field is required.',
+    // 'required'             => ':Attribute должен быть заполнен.',
     // 'required_if'          => 'The :attribute field is required when :other is :value.',
     // 'required_unless'      => 'The :attribute field is required unless :other is in :values.',
     // 'required_with'        => 'The :attribute field is required when :values is present.',
     // 'required_with_all'    => 'The :attribute field is required when :values is present.',
     // 'required_without'     => 'The :attribute field is required when :values is not present.',
     // 'required_without_all' => 'The :attribute field is required when none of :values are present.',
-    // 'same'                 => 'The :attribute and :other must match.',
+    // 'same'                 => ':Attribute и :other должен совпадать.',
     // 'size'                 => [
     //     'numeric' => 'The :attribute must be :size.',
     //     'file'    => 'The :attribute must be :size kilobytes.',
@@ -84,7 +84,7 @@ return [
     // ],
     // 'string'               => 'The :attribute must be a string.',
     // 'timezone'             => 'The :attribute must be a valid zone.',
-    // 'unique'               => 'The :attribute has already been taken.',
+    // 'unique'               => ':Attribute уже занят.',
     // 'uploaded'             => 'The :attribute failed to upload.',
     // 'url'                  => 'The :attribute format is invalid.',
 
@@ -99,30 +99,29 @@ return [
     |
     */
 
-   
     'custom' => [
         'agree' => [
-            'required' => 'Agree must be accepted.',
+            'required' => 'Условия должны быть приняты.',
         ],
         'name' => [
-            'required' => 'The name field required.',
+            'required' => 'Имя должно быть введено.',
         ],
         'email' => [
-            'required' => 'The E-mail field requires.',
-            'unique' => 'E-mail has already been taken.',
-            'exists' => 'E-mail not found.',
-            'email' => 'E-mail must be a valid email address..',
+            'required' => 'E-mail должен быть введен.',
+            'unique' => 'E-mail уже занят.',
+            'exists' => 'E-mail не найден.',
+            'email' => 'E-mail в неверном формате.',
         ],
         'password' => [
-            'required' => 'The password field requires.',
-            'min' => 'Password must be at least :min characters.',
+            'required' => 'Пароль должен быть введен.',
+            'min' => 'Пароль не должен быть короче :min символов.',
         ],
         'confirm_password' => [
-            'required' => 'Password confirmation required.',
-            'same' => 'Password and password confirmation not same.',
+            'required' => 'Подтверждение пароля не введено.',
+            'same' => 'Подтверждение пароля не совпадает.',
         ],
         'agree' => [
-            'required' => 'You must agree the terms',
+            'required' => 'Условия должны быть приняты.',
         ]
     ],
 
@@ -137,6 +136,11 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+       // 'email' => 'E-mail адрес',
+        //'name' => 'имя',
+        //'password' => 'пароль',
+        //'confirm_password' => 'повтор пароля',
+    ],
 
 ];

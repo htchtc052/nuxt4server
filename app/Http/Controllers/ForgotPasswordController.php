@@ -17,13 +17,8 @@ class ForgotPasswordController extends Controller
             'email' => 'required|email|exists:users',
         ];
     
-        $messages =  [
-            'email.required' => 'Please enter an email',
-            'email.email' => 'Please enter a valid email address',
-            'email.exists' => 'This e-mail is not registered. ',
-        ];
         
-        $validator= Validator::make($request->all(),$rules, $messages);
+        $validator= Validator::make($request->all(),$rules);
 
     	if($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
@@ -32,10 +27,10 @@ class ForgotPasswordController extends Controller
         try {
             $user = $changePassword->sendMail($request->get('email'));
         } catch (\Throwable $e){
-            return response()->json(['Email not sended'], 500);
+            return response()->json(['Server_error_send_mail'], 500);
         }
       
-        return response()->json(['Email send to '.$user->email], 200);
+        return response()->json(['success'], 200);
     }
     
     public function set(Request $request, ChangePasswordService $changePassword)
@@ -46,11 +41,6 @@ class ForgotPasswordController extends Controller
 			'confirm_password' => 'required|same:password'
         ];
     
-        $messages =  [
-            'password.required' => 'Please enter a new password',
-            'password.min' => 'New passwords must be 4 characters or more',
-        ];
-
         $validator= Validator::make($request->all(),$rules);
 
     	if ($validator->fails()){
@@ -60,14 +50,14 @@ class ForgotPasswordController extends Controller
         try {
             $user = $changePassword->change($request->get('email'), $request->get('token'), $request->get('password'));
         } catch (\Throwable $e){
-            return response()->json(['New password save problem'], 500);
+            return response()->json(['server_error'], 500);
         }
       
         
         try {
             $token = JWTAuth::fromUser($user);
          } catch (\Throwable $e){
-            return response()->json(['Auth problem'], 500);
+            return response()->json(['server_error_create_token'], 500);
         }
 
         return response()->json(compact('token'), 200);
