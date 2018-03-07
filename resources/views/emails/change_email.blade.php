@@ -1,15 +1,11 @@
-@component('mail::message')
-# Introduction
+@component('vendor.mail.markdown.message')
 
-Hi {{ $user -> name }},
+@lang('emails.change_email.greeting', ['name' => $user->name])
 
-Please click on the link below or copy it into the address bar of your browser to confirm changing email to {{ $email }} for your account:
-<br>!!
+@lang('emails.change_email.text')
 
 @component('mail::button', ['url' => route('email_set', $token)])
-Button Text
+    @lang('emails.change_email.button')
 @endcomponent
 
-Thanks,<br>
-{{ config('app.name') }}
 @endcomponent

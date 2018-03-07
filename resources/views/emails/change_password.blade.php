@@ -1,15 +1,11 @@
-@component('mail::message')
-# Introduction
+@component('vendor.mail.markdown.message')
 
-Hi {{ $user -> name }},
+@lang('emails.change_password.greeting', ['name' => $user->name])
 
-Please click on the link below or copy it into the address bar of your browser to start changing password for your account:
-<br>
+@lang('emails.change_password.text')
 
 @component('mail::button', ['url' => \Config::get('services.frontend.url')."/password_set/".$token."?email=".$user->email])
-Button Text
+    @lang('emails.change_password.button')
 @endcomponent
 
-Thanks,<br>
-{{ config('app.name') }}
 @endcomponent

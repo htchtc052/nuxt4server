@@ -6,39 +6,51 @@ use Illuminate\Http\Request;
 use Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
-	public function login(Request $request)
-	{
-		//return response()->json(['Error single test'], 500);
-		
-		$rules = [
-			'email' => 'required|email',
-			'password' => 'required'
-		];
+	use AuthenticatesUsers;
 
-		$validator= Validator::make($request->all(),$rules);
+	
 
-    	if ($validator->fails()){
-    		return response()->json(['errors' => $validator->messages()], 422);
-    	}
+    protected $maxAttempts = 5;
 
-		$credentials = $request->only('email', 'password');
+    protected $decayMinutes = 1;
 
+	
+	protected function attemptLogin(Request $request)
+    {
+        $token = $this->guard()->attempt($this->credentials($request));
+
+        if ($token) {
+            $this->guard()->setToken($token);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function sendLoginResponse(Request $request)
+    {
+        $this->clearLoginAttempts($request);
+	 
 		try {
-			if(!$token = JWTAuth::attempt($credentials)) {
-				return response()->json(['errors' => ['email' => ['Invalid login credential']]], 422);
-			}
+			
+			$token = (string) $this->guard()->getToken();
 		} catch(JWTException $e) {
 			return response()->json(['Server_error_token'], 500);
 		}
 
 		return response()->json(compact('token'), 200);
-	}
+    }
 
+
+	
 	public function logout(Request $request)
     {
-        \Auth::logout();
+        $this->guard()->logout();
     }
 }

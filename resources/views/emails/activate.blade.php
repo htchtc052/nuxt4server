@@ -1,17 +1,11 @@
-@component('mail::message')
-# Introduction
+@component('vendor.mail.markdown.message')
 
-Hi {{ $user -> name }},
-<br>
-Thank you for creating an account with us. Don't forget to complete your registration!
-<br>
-Please click on the link below or copy it into the address bar of your browser to confirm your email address:
-<br>
+@lang('emails.activation.greeting', ['name' => $user->name])
+
+@lang('emails.activation.text')
 
 @component('mail::button', ['url' => route('activate_set', $token)])
-Button Text
+    @lang('emails.activation.button')
 @endcomponent
 
-Thanks,<br>
-{{ config('app.name') }}
 @endcomponent
