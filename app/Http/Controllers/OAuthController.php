@@ -25,6 +25,10 @@ class OAuthController extends Controller
             'services.facebook.redirect' => route('oauth.callback', 'facebook'),
             'services.twitter.redirect' => route('oauth.callback', 'twitter'),
             'services.google.redirect' => route('oauth.callback', 'google'),
+            'services.vkontakte.redirect' => route('oauth.callback', 'vkontakte'),
+            'services.yandex.redirect' => route('oauth.callback', 'yandex'),
+            'services.odnoklassniki.redirect' => route('oauth.callback', 'odnoklassniki'),
+            'services.mailru.redirect' => route('oauth.callback', 'mailru'),
         ]);
     }
 
@@ -41,16 +45,10 @@ class OAuthController extends Controller
         ];
     }
 
-    /**
-     * Obtain the user information from the provider.
-     *
-     * @param  string $driver
-     * @return \Illuminate\Http\Response
-     */
     public function handleProviderCallback($provider)
     {
         $user_socialite = Socialite::driver($provider)->stateless()->user();
-       
+  
         $oauthProvider = OAuthProvider::where('provider', $provider)
         ->where('provider_user_id', $user_socialite->getId())
         ->first();
@@ -64,13 +62,26 @@ class OAuthController extends Controller
 
             $user = $oauthProvider->user;
         } else {
-            if (!$user_socialite -> email) {
+            $user_socialite_email = $this->getUserSocialiteEmail($user_socialite);
+            
+            if (!$user_socialite_email) {
                 return redirect()
                 ->to(\Config::get('services.frontend.url').'/auth_error?msg=social_no_email');
             }
         
-            if (!$user =  User::where('email', $user_socialite->getEmail())->first()) {
-                 $user =  $this->createUser($provider, $user_socialite);
+            if (!$user =  User::where('email', $user_socialite_email)->first()) {
+                $user = User::create([
+                    'name' => $user_socialite->getName(),
+                    'email' => $user_socialite_email,
+                    'is_verified' => 1,
+                ]);
+        
+                $user->oauthProviders()->create([
+                    'provider' => $provider,
+                    'provider_user_id' => $user_socialite->getId(),
+                    'access_token' => $user_socialite->token,
+                    'refresh_token' => $user_socialite->refreshToken,
+                ]);
             }   
         }
 
@@ -82,27 +93,17 @@ class OAuthController extends Controller
             ->to(\Config::get('services.frontend.url').'/auto_login?token='.$token.'&msg=social');
     }
 
-    /**
-     * @param  string $provider
-     * @param  \Laravel\Socialite\Contracts\User $sUser
-     * @return User
-     */
-    protected function createUser($provider, $user_socialite)
+    private function getUserSocialiteEmail($user_socialite)
     {
-        $user = User::create([
-            'name' => $user_socialite->getName(),
-            'email' => $user_socialite->getEmail(),
-            'is_verified' => 1,
-        ]);
+        if ($user_socialite -> getEmail()) {
+            return $user_socialite -> getEmail();
+        }
 
-        $user->oauthProviders()->create([
-            'provider' => $provider,
-            'provider_user_id' => $user_socialite->getId(),
-            'access_token' => $user_socialite->token,
-            'refresh_token' => $user_socialite->refreshToken,
-        ]);
+        if (isset($user_socialite->accessTokenResponseBody["email"])) {
+            return $user_socialite->accessTokenResponseBody["email"];
+        }
 
-        return $user;
+        return null;
+
     }
-
 }

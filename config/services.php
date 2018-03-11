@@ -51,6 +51,24 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
     ],
+    'vkontakte' => [
+        'client_id' => env('VKONTAKTE_KEY'),
+        'client_secret' => env('VKONTAKTE_SECRET'),
+    ], 
+    'yandex' => [
+        'client_id' => env('YANDEX_KEY'),
+        'client_secret' => env('YANDEX_SECRET'),
+    ], 
+    'odnoklassniki' => [
+        'client_id' => env('ODNOKLASSNIKI_ID'),
+        'client_secret' => env('ODNOKLASSNIKI_SECRET'),
+        'client_public' => env('ODNOKLASSNIKI_PUBLIC'),
+    ],
+    'mailru' => [
+        'client_id' => env('MAILRU_ID'),
+        'client_secret' => env('MAILRU_SECRET'),
+        'redirect' => env('MAILRU_REDIRECT'),  
+    ],
 
 
 ];

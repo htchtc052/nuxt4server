@@ -11,9 +11,13 @@
         "barryvdh/laravel-debugbar": "^3.1",
         "fideloper/proxy": "~3.3",
         "guzzlehttp/guzzle": "^6.3",
+        "jhaoda/socialite-mailru": "^3.0",
+        "jhaoda/socialite-odnoklassniki": "^3.0",
         "laravel/framework": "5.5.*",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
+        "socialiteproviders/vkontakte": "^3.2",
+        "socialiteproviders/yandex": "^3.0",
         "tymon/jwt-auth": "^1.0.0-rc.1"
     },
     "require-dev": {
