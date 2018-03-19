@@ -13,14 +13,11 @@ class LoginController extends Controller
 {
 	use AuthenticatesUsers;
 
-	
-
-    protected $maxAttempts = 5;
+    protected $maxAttempts = 7;
 
     protected $decayMinutes = 1;
 
-	
-	protected function attemptLogin(Request $request)
+    protected function attemptLogin(Request $request)
     {
         $token = $this->guard()->attempt($this->credentials($request));
 

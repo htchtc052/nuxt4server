@@ -33,9 +33,7 @@ class UserController extends Controller
 		$user = $request->user();
 		$user->updateName($request->get('name'));
 
-		$message = 'Profile update successfully';
-
-		return response()->json(compact('user', 'message'));
+		return response()->json(compact('user'));
 	}
 
 	public function updatePassword(Request $request)

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Exceptions\EmailTakenException;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class OAuthController extends Controller
 {
@@ -45,10 +46,20 @@ class OAuthController extends Controller
         ];
     }
 
-    public function handleProviderCallback($provider)
+    public function handleProviderCallback(Request $request, $provider)
     {
-        $user_socialite = Socialite::driver($provider)->stateless()->user();
-  
+        if (!$request->has('code') || $request->has('denied')) {
+            return redirect()
+            ->to(\Config::get('services.frontend.url').'/auth_error?msg=social_no_email');
+        }
+
+        try {
+            $user_socialite = Socialite::driver($provider)->stateless()->user();
+        } catch (Exception $e) {
+            return redirect()
+                ->to(\Config::get('services.frontend.url').'/auth_error?msg=social_error');
+        }
+        
         $oauthProvider = OAuthProvider::where('provider', $provider)
         ->where('provider_user_id', $user_socialite->getId())
         ->first();

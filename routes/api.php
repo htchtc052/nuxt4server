@@ -33,20 +33,20 @@ Route::get('activate_set/{token}', 'ActivateController@set')->name('activate_set
 Route::post('email_set', 'ChangeEmailController@setEmail');
 Route::get('email_set/{token}', 'ChangeEmailController@set')->name('email_set');
 
+Route::get('refresh_token', 'UserController@show')->middleware('jwt.refresh');
 
-Route::group(['middleware' => 'jwt_token_custom'], function()
-{
-    Route::get('user', 'UserController@show');
-    Route::post('user/update', 'UserController@updateProfile');
-    Route::post('user/password', 'UserController@updatePassword');
-    Route::post('user/email', 'ChangeEmailController@sendMail');
-    Route::post('activate_send_email', 'ActivateController@send');
+Route::group(['middleware' => 'jwt.auth'], function() {
+    
+    Route::get('user', 'UserController@show')->name('user');
+
+    Route::post('activate_send_email', 'ActivateController@send')->middleware('inactive');
+
+    Route::group(['middleware' => 'active'], function() {
+        Route::post('user/update', 'UserController@updateProfile');
+        Route::post('user/password', 'UserController@updatePassword');
+        Route::post('user/email', 'ChangeEmailController@sendMail');
+    });
 
 });
 
 Route::post('logout', 'LoginController@logout');
-
-
-
-
-
