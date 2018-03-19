@@ -36,8 +36,10 @@ Route::get('email_set/{token}', 'ChangeEmailController@set')->name('email_set');
 Route::get('refresh_token', 'UserController@show')->middleware('jwt.refresh');
 
 Route::group(['middleware' => 'jwt.auth'], function() {
-    
+
     Route::get('user', 'UserController@show')->name('user');
+
+    Route::post('logout', 'LoginController@logout');
 
     Route::post('activate_send_email', 'ActivateController@send')->middleware('inactive');
 
@@ -49,4 +51,3 @@ Route::group(['middleware' => 'jwt.auth'], function() {
 
 });
 
-Route::post('logout', 'LoginController@logout');
