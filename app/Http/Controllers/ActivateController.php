@@ -3,43 +3,63 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\ActivateEmailService;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Services\ActivateService;
+use Throwable;
+
 
 class ActivateController extends Controller
 {
-    //
-    public function send(Request $request, ActivateEmailService $activateEmail)
+  
+    public function send(Request $request)
     {
         $user = $request->user();
-        
+
         try {
-            $activateEmail->sendMail($user);
-        } catch (\Throwable $e){
-            return response()->json(['Server_error_send_email'], 500);
+            $user->sendActivateToken();
+        } catch (Throwable $e){
+            return response()->json(['server_send_token_error'], 500);
         }
         
         return response()->json(['success'], 200);
     }
 
-    public function set(Request $request, $token, ActivateEmailService $activateEmail)
-    {
+    public function set(Request $request)
+    {   
         try {
-            $user = $activateEmail->activate($token);
-        } catch (\Throwable $e){
-            return redirect()
-            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
+           $user = $this->checkToken();
+        }  catch (Throwable $e){
+            //dd($e->getMessage());
+            return redirect()->to(config('services.frontend.url').'/activate_set?msg=invalid_link');
         }
-       
+        
         try {
-            $token = JWTAuth::fromUser($user);
-         } catch (\Throwable $e){
-            return redirect()
-            ->to(\Config::get('services.frontend.url').'/auth_error?msg=invalid_link');
+            $new_token =  $this -> setActivate($user);
+        } catch (Throwable $e) {
+              //dd($e->getMessage());
+            return redirect()->to(config('services.frontend.url').'/activate_set?msg=server_error');
         }
 
         return redirect()
-            ->to(\Config::get('services.frontend.url').'/auto_login?token='.$token.'&msg=activate');
+            ->to(config('services.frontend.url').'/activate_set?msg=success&token='.$new_token);
+    }
+
+    private function checkToken()
+    {
+        $payload = auth()->parseToken()->getPayload();
+        $user = auth()->user();
+
+        if ($payload["action"] != config('services.mail_actions.activate')) {
+            throw new Exception("token_wrong_action");
+        }
+
+        return $user;
+    }
+
+    private function setActivate($user)
+    {
+        $user->setActivate();
+        auth()->invalidate();
+
+        return auth()->login($user);
     }
 }

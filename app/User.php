@@ -5,10 +5,12 @@ namespace App;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Config;
+use \App\Notifications\{Activate, PasswordReset};
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable;
+    use Notifiable, TokenSendableTrait;
 
     protected $fillable = [
         'name', 'email', 'password', 'is_verified'
@@ -32,6 +34,14 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+
+    public function setActivate()
+    {
+        $this->forceFill([
+            'is_verified' => true
+        ])->save();
     }
 
     public function updatePassword($password)

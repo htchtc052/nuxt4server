@@ -36,6 +36,6 @@ class ChangeEmailMail extends Mailable
                 'email' => $this->data['email'], 
                 'token' => $this->data['token']
             ]
-        );
+        )->subject(trans('emails.change_email.subject', ['appname' => config('app.name')]));
     }
 }

@@ -9,7 +9,7 @@ use App\Mail\ChangePass;
 use Illuminate\Support\Str;
 use Mail;
 
-class ChangePasswordService
+class ChangePasswordService1
 {
     public function sendMail($email)
     {

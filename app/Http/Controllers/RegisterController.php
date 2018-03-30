@@ -5,15 +5,12 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use App\Services\ActivateEmailService;
+use Validator, Throwable;
 
 class RegisterController extends Controller
 {
-    
-    public function register(Request $request, ActivateEmailService $activateEmail)
+ 
+    public function register(Request $request)
     {
 
         //return response()->json(['Error single test'], 500);
@@ -26,10 +23,8 @@ class RegisterController extends Controller
 			'confirm_password' => 'required|same:password',
             'agree' => 'required',
         ];
-    
        
         $validator= Validator::make($request->all(),$rules);
-
         
     	if ($validator->fails()){
     		return response()->json(['errors' => $validator->messages()], 422);
@@ -43,16 +38,16 @@ class RegisterController extends Controller
         ]);
 
         try {
-            $activateEmail->sendMail($user);
-        } catch (\Throwable $e){
-            return response()->json(['Server_error_send_mail'], 500);
+            $user->sendActivateToken();
+        } catch (Throwable $e){
+            return response()->json(['error' => $e->getMessage()], 500);
         }
 
         
         try {
-            $token = JWTAuth::fromUser($user);
-         } catch (\Throwable $e){
-            return response()->json(['Server_error_create_token'], 500);
+            $token = auth()->login($user);
+         } catch (Throwable $e){
+            return response()->json(['error' => $e->getMessage()], 500);
         }
         
         return response()->json(compact('token'), 200);

@@ -28,7 +28,11 @@ return [
     'sparkpost' => [
         'secret' => env('SPARKPOST_SECRET'),
     ],
-
+    'mail_actions' => [
+        'activate' => 1,
+        'password_reset' => 2,
+        'email_change' => 3,
+    ],
     'stripe' => [
         'model' => App\User::class,
         'key' => env('STRIPE_KEY'),

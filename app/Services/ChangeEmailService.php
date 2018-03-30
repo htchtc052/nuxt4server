@@ -2,71 +2,44 @@
 
 namespace App\Services;
 
-use App\User;
-use App\ChangeEmail;
-use Carbon\Carbon;
-use App\Mail\ChangeEmailMail;
-use Illuminate\Support\Str;
-use Mail;
-
 class ChangeEmailService
 {
-    public function sendChangeEmailMail($user, $email)
+    private $new_email;
+    private $new_token;
+    private $user;
+
+    public function getUser()
     {
-        $token = $this->getToken();
-
-        $changeEmail =  ChangeEmail::where('user_id', $user->id)
-                ->first();
-
-        if (!$changeEmail) {
-            ChangeEmail::create([
-                'user_id' => $user->id,
-                'token' => $token,
-                'email' => $email,
-            ]);
-        } else {
-            $changeEmail->forceFill([
-                'token' => $token,
-                'email' => $email,
-            ])->save();
-        }
-
-        \Mail::to($email)->send(
-            new ChangeEmailMail(array(
-                'user' => $user,
-                'email' => $email,
-                'token' => $token,
-            ))
-        );
+        return $this->user;
     }
 
-    public function setEmail($token)
+    public function getNewToken()
     {
-        if (!$changeEmail = ChangeEmail::where('token', $token)
-        ->where('updated_at', '>', Carbon::now()->addMinutes(-60))
-            ->first()
-            ) {
-            throw new \Exception("Link expired or invalid");
+        return $this->new_token;
+    }
+
+    public function check()
+    {
+        $payload = auth()->parseToken()->getPayload();
+
+        if ($payload["action"] != config('services.mail_actions.change_email')) {
+            throw new Exception("token_wrong_action");
         }
 
-        $user =  User::where('id', '=', $changeEmail->user_id)
-                ->first();
+        $this->new_email = $payload["new_email"];
 
-        if (!$user) {
-            throw new \Exception("User for set email not found");
+        $this->user = auth()->user();
+
+        if (!$this->new_email || $this->new_email == $this->user->email) {
+            throw new Exception("token_wrong_new_email");
         }
-
-        $user->updateEmail($changeEmail->email);
-
-        ChangeEmail::where([['user_id', '=', $user->id], ['token', '=', $token]])->delete();
-
-        return $user;
         
     }
 
-    private function getToken()
+    public function set()
     {
-        return hash_hmac('sha256', str_random(40), config('app.key'));
+        $this->user->updateEmail($this->new_email);
+        auth()->invalidate();
+        $this->new_token = auth()->login($this->user);
     }
-
 }
