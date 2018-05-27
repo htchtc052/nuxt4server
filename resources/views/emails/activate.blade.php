@@ -4,7 +4,7 @@
 
 @lang('emails.activation.text')
 
-@component('mail::button', ['url' => route('activate_set', $token)])
+@component('mail::button', ['url' =>  config('services.frontend.url')."/activate_set/".$token])
     @lang('emails.activation.button')
 @endcomponent
 

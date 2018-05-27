@@ -21,7 +21,7 @@ Route::group(['middleware' => 'guest:api'], function () {
     Route::get('oauth/{driver}/callback', 'OAuthController@handleProviderCallback')->name('oauth.callback');    
 });
 
-Route::get('activate_set/{token}', 'ActivateController@set')->name('activate_set');
+Route::post('activate_set', 'ActivateController@set')->name('activate_set');
 
 Route::post('password_check_before_set', 'PasswordResetController@check_before_set');
 Route::post('password_set', 'PasswordResetController@set');

@@ -28,28 +28,29 @@ class ActivateController extends Controller
         try {
            $user = $this->checkToken();
         }  catch (Throwable $e){
-            //dd($e->getMessage());
-            return redirect()->to(config('services.frontend.url').'/activate_set?msg=invalid_link');
+            return response()->json(['activation_set_token_invalid', $e->getMessage()], 403);
+           //return redirect()->to(config('services.frontend.url').'/login?msg=activation_error');
         }
         
         try {
-            $new_token =  $this -> setActivate($user);
+            $token =  $this -> setActivate($user);
         } catch (Throwable $e) {
-              //dd($e->getMessage());
-            return redirect()->to(config('services.frontend.url').'/activate_set?msg=server_error');
+            // return redirect()->to(config('services.frontend.url').'/login?msg=activation_error');
+            return response()->json(['server_error', $e->getMessage()], 500);
         }
 
-        return redirect()
-            ->to(config('services.frontend.url').'/activate_set?msg=success&token='.$new_token);
+        return response()->json(compact('token'));
     }
 
     private function checkToken()
     {
         $payload = auth()->parseToken()->getPayload();
+        //var_dump($payload["action"]);
+        
         $user = auth()->user();
 
         if ($payload["action"] != config('services.mail_actions.activate')) {
-            throw new Exception("token_wrong_action");
+            throw new \Exception("token_wrong_action");
         }
 
         return $user;

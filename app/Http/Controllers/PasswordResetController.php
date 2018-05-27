@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator, Throwable, Exception;
 use App\User;
+use Tymon\JWTAuth\Facades\{JwtFactory, JwtAuth};
 
 class PasswordResetController extends Controller
 {
@@ -25,33 +26,37 @@ class PasswordResetController extends Controller
         $user = User::where('email', $request->get('email'))->first();
        
         try {
-            $user -> sendPasswordResetToken();
+           $token =  $user -> sendPasswordResetToken();
         } catch (Throwable $e){
-            return response()->json(['server_send_token_error'], 500);
+            return response()->json(['server_send_token_error'.$e->getMessage()], 403);
         }
 
-        return response()->json(['success'], 200);
+        return response()->json(['success '.$token], 200);
     }
     
 
     public function check_before_set(Request $request) 
     {
-        
         try {
-            $user = $this->checkToken($request->get('email'));
+            $user = $this->checkToken($request->get('reset_password_token'), $request->get('email'));
         }  catch (Throwable $e){
              
-             return response()->json(['password_reset_token_invalid', $e->getMessage()], 403);
+             return response()->json(['check_token_error '.$e->getMessage()], 403);
         }
 
-         return response()->json(compact('user'));
+         return response()->json(['check_token_ok '.$user->id], 200);
         
     }
 
 
     public function set(Request $request)
     {
-        
+        try {
+            $user = $this->checkToken($request->get('reset_password_token'), $request->get('email'));
+        }  catch (Throwable $e){
+             return response()->json(['check_token_error'], 403);
+        }
+
         $rules =  [
 			'password' => 'required|min:4',
 			'confirm_password' => 'required|same:password'
@@ -63,27 +68,33 @@ class PasswordResetController extends Controller
     		return response()->json(['errors' => $validator->messages()], 422);
         }
         
-        try {
-            $user = $this->checkToken($request->get('email'));
-        }  catch (Throwable $e){
-             return response()->json(['password_reset_token_invalid', $e->getMessage()], 403);
-        }
+       
 
         try {
-            $token = $this->setNewPassword($user, $request->get('password'));
+            //так как перейдя по ссылке он активировался, если не был активирован
+            if (!$user->verified) {
+                $user->setActivate();
+            }
+            $user->updatePassword($request->get('password'));
+            
+            JWTAuth::setToken($request->get('reset_password_token'));
+            JWTAuth::invalidate(); 
+            $new_token = JWTAuth::fromUser($user);
         }  catch (Throwable $e){
-             return response()->json(['server_error', $e->getMessage()], 500);
+             return response()->json(['set_password_error '.$e->getMessage()], 403);
         }
 
-        return response()->json(compact('token', 'user'));
+        return response()->json(compact('new_token'));
       
     }
 
-    private function checkToken($email)
+    private function checkToken($reset_password_token, $email)
     {
-        $payload = auth()->parseToken()->getPayload();
-        $user = auth()->user();
-
+      
+        JWTauth::setToken($reset_password_token);
+        $payload = JWTAuth::getPayload();
+        $user = JWTAuth::authenticate();
+        
         if ($payload["action"] != config('services.mail_actions.password_reset')) {
             throw new Exception("token_wrong_action");
         }
@@ -98,15 +109,7 @@ class PasswordResetController extends Controller
 
     private function setNewPassword($user, $new_password)
     {
-        //так как перейдя по ссылке он активировался, если не был активирован
-        if (!$user->verified) {
-            $user->setActivate();
-        }
-
-        $user->updatePassword($new_password);
-        auth()->invalidate();
-
-        return auth()->login($user);
+    
     }
    
 }
