@@ -28,9 +28,9 @@ Route::post('password_set', 'PasswordResetController@set');
 
 Route::get('email_set/{token}', 'ChangeEmailController@set')->name('email_set');
 
-Route::get('refresh_token', 'UserController@show')->middleware('jwt.refresh');
+//Route::get('refresh_token', 'UserController@showRefresh')->middleware('jwt_custom_refresh');
 
-Route::group(['middleware' => 'jwt.auth'], function() {
+Route::group(['middleware' => 'jwt_custom_refresh'], function() {
 
     Route::get('user', 'UserController@show')->name('user');
 

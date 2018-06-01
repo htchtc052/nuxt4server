@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Tymon\JWTAuth\Facades\{JwtFactory, JwtAuth};
 
 class LoginController extends Controller
 {
@@ -39,9 +39,16 @@ class LoginController extends Controller
 			$token = (string) $this->guard()->getToken();
 		} catch(JWTException $e) {
 			return response()->json(['Server_error_token'], 500);
-		}
+        }
+        
+        try {
+		    $user = $this->guard()->authenticate();
+        } catch(JWTException $e) {
+            return response()->json(['Server_error_get_user'], 500);
+        }
+    
 
-		return response()->json(compact('token'), 200);
+		return response()->json(compact('token', 'user'), 200);
     }
 
 
