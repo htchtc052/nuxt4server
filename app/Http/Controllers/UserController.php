@@ -17,15 +17,6 @@ class UserController extends Controller
 		return response()->json(compact('user'));
 	}
 
-	public function showRefresh(Request $request)
-	{
-		$user = $request->user();
-
-		//$new_token = $request->get('new_token');
-
-		return response()->json(compact('user'));
-	}
-
 	public function updateProfile(Request $request)
 	{
 		$rules = [

@@ -37,14 +37,14 @@ class ActivateController extends Controller
                 
             JWTAuth::setToken($request->get('activate_token'));
             JWTAuth::invalidate(); 
-            $new_token = JWTAuth::fromUser($user);
+            $token = JWTAuth::fromUser($user);
 
         } catch (Throwable $e) {
             // return redirect()->to(config('services.frontend.url').'/login?msg=activation_error');
             return response()->json(['server_error '.$e->getMessage()], 403);
         }
 
-        return response()->json(compact('new_token', 'user'));
+        return response()->json(compact('token', 'user'));
     }
 
     private function checkToken($activate_token)

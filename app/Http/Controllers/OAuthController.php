@@ -50,14 +50,14 @@ class OAuthController extends Controller
     {
         if (!$request->has('code') || $request->has('denied')) {
             return redirect()
-            ->to(config('services.frontend.url').'/auth_error?msg=server_error');
+            ->to(config('services.frontend.url').'/login?error_msg=error_social');
         }
 
         try {
             $user_socialite = Socialite::driver($provider)->stateless()->user();
         } catch (Exception $e) {
             return redirect()
-                ->to(config('services.frontend.url').'/social_login?msg=error_no_email');
+                ->to(config('services.frontend.url').'/login?error_msg=error_social');
         }
         
         $oauthProvider = OAuthProvider::where('provider', $provider)
@@ -77,7 +77,7 @@ class OAuthController extends Controller
             
             if (!$user_socialite_email) {
                 return redirect()
-                ->to(config('services.frontend.url').'/social_login?msg=no_email');
+                ->to(config('services.frontend.url').'/login?error_msg=error_social_email');
             }
         
             if (!$user =  User::where('email', $user_socialite_email)->first()) {
@@ -93,7 +93,12 @@ class OAuthController extends Controller
                     'access_token' => $user_socialite->token,
                     'refresh_token' => $user_socialite->refreshToken,
                 ]);
-            }   
+            } 
+        }
+
+        if (!$user->is_verified) {
+            $user->is_verified =  1;
+            $user->save();
         }
 
         $this->guard()->setToken(

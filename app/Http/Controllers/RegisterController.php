@@ -50,6 +50,6 @@ class RegisterController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
         
-        return response()->json(compact('token'), 200);
+        return response()->json(compact('token', 'user'), 200);
     }
 }

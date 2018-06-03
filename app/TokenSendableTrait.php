@@ -23,7 +23,7 @@ trait TokenSendableTrait
     public function sendPasswordResetToken()
     {
          $token = auth()
-            ->setTTL(15)
+            ->setTTL(2)
                 ->claims(['action' => config('services.mail_actions.password_reset'), 'email' => $this->email])
                     ->login($this);
 

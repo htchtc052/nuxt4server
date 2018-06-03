@@ -28,7 +28,7 @@ class PasswordResetController extends Controller
         try {
            $token =  $user -> sendPasswordResetToken();
         } catch (Throwable $e){
-            return response()->json(['server_send_token_error'.$e->getMessage()], 403);
+            return response()->json(['server_send_token_error'.$e->getMessage()], 500);
         }
 
         return response()->json(['success '.$token], 200);
@@ -44,7 +44,7 @@ class PasswordResetController extends Controller
              return response()->json(['check_token_error '.$e->getMessage()], 403);
         }
 
-         return response()->json(['check_token_ok '.$user->id], 200);
+         return response()->json(['check_password_token_ok '], 200);
         
     }
 
@@ -79,12 +79,12 @@ class PasswordResetController extends Controller
             
             JWTAuth::setToken($request->get('reset_password_token'));
             JWTAuth::invalidate(); 
-            $new_token = JWTAuth::fromUser($user);
+            $token = JWTAuth::fromUser($user);
         }  catch (Throwable $e){
-             return response()->json(['set_password_error '.$e->getMessage()], 403);
+             return response()->json(['set_password_error '.$e->getMessage()], 500);
         }
 
-        return response()->json(compact('new_token'));
+        return response()->json(compact('user', 'token'));
       
     }
 

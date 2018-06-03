@@ -79,67 +79,15 @@ class RefreshToken extends VendorMiddleware
         
         $response = $next($request);
         
-        //$new_token = isset($new_token) ? $new_token : null;
         if (isset($new_token)) {
             \Log::info("RefreshToken.php set_new_token to header ".$new_token);
             $response->headers->set('new_token', $new_token);
         } else {
-            $response->headers->set('test_token', 5555);
             \Log::info("RefreshToken.php not set new_token to header ");
         }
-       // if ($new_token) {
-            //$request->attributes->add(['new_token' => $new_token]);
-        //} else {
-            
-         //   $request->attributes->add(['new_token' => $request->get('token')]);
-        //}
-
-       
-
-       
 
         return $response;
-        //return response()->json(['error_refrsh'], 401);
-    //$response->headers->set('Authorization', $newToken);
-        
-
-      /*   try {
-            JWTauth::setToken($request->get('token'));
-       } catch(TokenInvalidException $e) {
-           return response()->json(['invalid_token_error '.$e->getMessage()], 401);
-       } catch(\Exception $e) {
-           return response()->json(['token_set_error '.$e->getMessage()], 401);
-       }
-      
-      
-    
-       \Log::info("RefreshToken.php getToken ".JWTauth::getToken());
-
-      
-      
-        try {
-            $token = JWTauth::refresh();
-        } catch (JWTException $e) {
-            return response()->json(['refresh_token_error# '.$e->getMessage()], 401);
-            //throw new UnauthorizedHttpException('jwt-auth', $e->getMessage(), $e, $e->getCode());
-        }
-
-        
-       \Log::info("RefreshToken.php newToken ".$token);
-
-        try {
-            JWTauth::setToken($token);
-            $user = JWTauth::toUser();
-        } catch(\Exception $e) {
-            return response()->json(['token_user_error '.$e->getMessage()], 401);
-        }
-  
-        
-       \Log::info("RefreshToken.php user ".$user->email);
-
-        return response()->json(compact('token', 'user'), 200);
-
-    */
+     
 
     }
 }
