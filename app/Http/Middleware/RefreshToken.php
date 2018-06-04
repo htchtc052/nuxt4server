@@ -34,9 +34,6 @@ class RefreshToken extends VendorMiddleware
     public function handle($request, Closure $next)
     {
         \Log::info("RefreshToken.php request_token ".$request->get('token'));
-    
-       
-
         try
         {
             //$user = JWTAuth::setToken($request->get('token'))->authenticate();
@@ -62,7 +59,7 @@ class RefreshToken extends VendorMiddleware
                 $new_token = JWTAuth::refresh(JWTAuth::getToken());
                 $user = JWTAuth::setToken($new_token)->toUser();
                 
-                \Log::info("RefreshToken.php sucess_refresh new_token ".$new_token);
+                \Log::info("RefreshToken.php sucess_refresh user ".$user->email." new_token ".$new_token);
                 //return response()->json(compact('token', 'user'), 200);
 
             } catch (JWTException $e) {
@@ -87,7 +84,5 @@ class RefreshToken extends VendorMiddleware
         }
 
         return $response;
-     
-
     }
 }
