@@ -41,7 +41,7 @@ class ActivateController extends Controller
 
         } catch (Throwable $e) {
             // return redirect()->to(config('services.frontend.url').'/login?msg=activation_error');
-            return response()->json(['server_error '.$e->getMessage()], 403);
+            return response()->json(['server_error '.$e->getMessage()], 500);
         }
 
         return response()->json(compact('token', 'user'));
