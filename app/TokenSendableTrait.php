@@ -11,7 +11,7 @@ trait TokenSendableTrait
     {
     
         $token = auth()
-            ->setTTL(15)
+            ->setTTL(2)
                 ->claims(['action' => config('services.mail_actions.activate')])
                     ->login($this);
  
@@ -35,7 +35,7 @@ trait TokenSendableTrait
     public function sendChangeEmailToken($new_email)
     {
         $token = auth()
-            ->setTTL(15)
+            ->setTTL(2)
                 ->claims(['action' => config('services.mail_actions.email_change'), 'new_email' => $new_email])
                     ->login($this);
  

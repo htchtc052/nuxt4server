@@ -33,7 +33,7 @@ class RefreshToken extends VendorMiddleware
      */
     public function handle($request, Closure $next)
     {
-       //return response()->json(['error'], 403);
+        //return response()->json(['error'], 500);
 
         \Log::info("RefreshToken.php request_token ".$request->get('token'));
         try
